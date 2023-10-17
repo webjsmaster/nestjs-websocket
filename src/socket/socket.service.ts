@@ -12,7 +12,6 @@ import {
   },
 })
 export default class SocketService implements OnGatewayConnection {
-  
   @SubscribeMessage('server-path')
   handleEvent(@MessageBody() dto: any, @ConnectedSocket() client: any) {
     console.log('🧬:', dto);

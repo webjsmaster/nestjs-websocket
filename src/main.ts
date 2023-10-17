@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 const port = +process.env.API_PORT || 8080;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe()); // валидация
   app.enableCors();

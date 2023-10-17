@@ -2,20 +2,23 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Request,
   UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { CreateUsersDto } from '../users/dto/users.dto';
+import { CreateUsersDto, LoginUsersDto } from '../users/dto/users.dto';
 import { AuthService } from './auth.service';
 import { RefreshDto } from './dto/refresh.dto';
 import { JwtRefreshGuard } from '../../guards/jwt-refresh.guard';
 
 import { Public } from '../../decorators/public.decorators';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -25,7 +28,7 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.OK)
   @Post('/login')
-  login(@Body() userDTO: CreateUsersDto) {
+  login(@Body() userDTO: LoginUsersDto) {
     return this.authService.login(userDTO);
   }
 
@@ -45,5 +48,11 @@ export class AuthController {
   @Post('/refresh')
   refresh(@Body() refreshToken: RefreshDto) {
     return this.authService.refresh(refreshToken);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }

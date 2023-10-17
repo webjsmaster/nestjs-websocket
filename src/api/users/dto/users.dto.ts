@@ -15,6 +15,17 @@ export class CreateUsersDto {
   readonly password: string;
 }
 
+export class LoginUsersDto {
+  @IsString()
+  @IsEmail()
+  @IsNotEmpty()
+  readonly email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly password: string;
+}
+
 export class UpdateUserDto {
   @IsString()
   @IsNotEmpty()

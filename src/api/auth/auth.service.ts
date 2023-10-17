@@ -1,5 +1,5 @@
 import { Body, ForbiddenException, Injectable } from '@nestjs/common';
-import { CreateUsersDto } from '../users/dto/users.dto';
+import { CreateUsersDto, LoginUsersDto } from '../users/dto/users.dto';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -14,10 +14,8 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(@Body() userDTO: CreateUsersDto) {
+  async login(@Body() userDTO: LoginUsersDto) {
     const user = await this.validateUser(userDTO);
-
-    console.log('USER', user);
     return {
       accessToken: await this.generateAccessToken(user),
       refreshToken: await this.generateRefreshToken(user),
@@ -52,7 +50,6 @@ export class AuthService {
 
   async generateAccessToken(user: UserEntity) {
     const payload = { login: user.login, id: user.id };
-    console.log('JWT_SECRET_KEY', process.env.JWT_SECRET_KEY);
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET_KEY || 'SECRET_KEY',
       expiresIn: process.env.TOKEN_EXPIRE_TIME || '1h',
@@ -67,8 +64,8 @@ export class AuthService {
     });
   }
 
-  private async validateUser(userDTO: CreateUsersDto) {
-    const user = await this.usersService.getUserByLogin(userDTO.login);
+  private async validateUser(userDTO: LoginUsersDto) {
+    const user = await this.usersService.getUserByEmail(userDTO.email);
     if (!user) {
       throw new ForbiddenException('Incorrect email or password');
     }
