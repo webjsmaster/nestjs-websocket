@@ -25,6 +25,9 @@ export class UserEntity {
   @Column()
   version: number;
 
+  @Column()
+  avatar: string;
+
   @CreateDateColumn({
     transformer: {
       from: (value: Date) => value.getTime(),
@@ -46,7 +49,7 @@ export class UserEntity {
   }
 
   toResponse() {
-    const { id, login, version, createdAt, updatedAt } = this;
-    return { id, login, version, createdAt, updatedAt };
+    const { id, login, version, createdAt, updatedAt, email, avatar } = this;
+    return { id, login, version, createdAt, updatedAt, email, avatar };
   }
 }

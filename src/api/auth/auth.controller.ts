@@ -19,10 +19,14 @@ import { JwtRefreshGuard } from '../../guards/jwt-refresh.guard';
 
 import { Public } from '../../decorators/public.decorators';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService,
+  ) {}
 
   @Public()
   @UsePipes(ValidationPipe)
@@ -52,7 +56,8 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
+  async getProfile(@Request() req) {
+    console.log('🌻:', await this.userService.getOne(req.user.id));
     return req.user;
   }
 }

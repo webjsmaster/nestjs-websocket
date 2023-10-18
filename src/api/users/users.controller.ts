@@ -14,9 +14,9 @@ import {
   UseInterceptors,
   UsePipes,
   ValidationPipe,
-} from '@nestjs/common'
-import { UsersService } from './users.service'
-import { CreateUsersDto, UpdateUserDto } from './dto/users.dto'
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUsersDto, UpdateUserDto } from './dto/users.dto';
 
 //npx @nestjs/cli g c users
 
@@ -27,14 +27,14 @@ export class UsersController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   getAll() {
-    return this.usersService.getAll()
+    return this.usersService.getAll();
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   getOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.getOne(id)
+    return this.usersService.getOne(id);
   }
 
   @UsePipes(ValidationPipe)
@@ -42,25 +42,28 @@ export class UsersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() CreateUser: CreateUsersDto) {
-    return this.usersService.create(CreateUser)
+    return this.usersService.create(CreateUser);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(ValidationPipe)
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUser: UpdateUserDto) {
-    return this.usersService.update(id, updateUser)
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateUser: UpdateUserDto,
+  ) {
+    return this.usersService.update(id, updateUser);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   delete(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.delete(id)
+    return this.usersService.delete(id);
   }
 
   @Get('/test/1')
   testing() {
-    return this.usersService.testing()
+    return this.usersService.testing();
   }
 }

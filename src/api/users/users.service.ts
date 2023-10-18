@@ -45,6 +45,7 @@ export class UsersService {
       const user = await this.userRepository.save({
         ...userInput,
         version: 1,
+        avatar: '',
       });
       return await this.getOne(user.id);
     }
