@@ -3,7 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUsersDto, UpdateUserDto } from './dto/users.dto';
+import {
+  CreateUsersDto,
+  UpdateAvatarUserDto,
+  UpdateUserDto,
+} from './dto/users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/users.entity';
 import { DeleteResult, Repository } from 'typeorm';
@@ -24,7 +28,7 @@ export class UsersService {
     if (user) {
       return user;
     } else {
-      throw new NotFoundException();
+      throw new NotFoundException('User not found');
     }
   }
 
@@ -63,6 +67,15 @@ export class UsersService {
     } else {
       throw new ForbiddenException('Old password is not correct');
     }
+  }
+
+  async updateAvatar(id: string, avatar: UpdateAvatarUserDto) {
+    const user = await this.getOne(id);
+    await this.userRepository.update(id, {
+      avatar: avatar.avatar,
+      version: ++user.version,
+    });
+    return await this.getOne(user.id);
   }
 
   async delete(id: string): Promise<DeleteResult> {

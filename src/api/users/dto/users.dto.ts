@@ -35,3 +35,9 @@ export class UpdateUserDto {
   @IsNotEmpty()
   newPassword: string;
 }
+
+export class UpdateAvatarUserDto {
+  @IsString()
+  @IsNotEmpty()
+  avatar: string;
+}

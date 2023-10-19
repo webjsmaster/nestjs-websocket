@@ -11,12 +11,13 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUsersDto, UpdateUserDto } from './dto/users.dto';
+import { CreateUsersDto, UpdateAvatarUserDto, UpdateUserDto } from './dto/users.dto';
 
 //npx @nestjs/cli g c users
 
@@ -54,6 +55,18 @@ export class UsersController {
     @Body() updateUser: UpdateUserDto,
   ) {
     return this.usersService.update(id, updateUser);
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(ValidationPipe)
+  @Put('update/:id')
+  @HttpCode(HttpStatus.OK)
+  updateAvatar(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() avatar: UpdateAvatarUserDto,
+  ) {
+    // console.log('🚀:', id, avatar);
+    return this.usersService.updateAvatar(id, avatar);
   }
 
   @Delete(':id')

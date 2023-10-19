@@ -4,8 +4,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  UpdateQueryBuilder,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { UpdateAvatarUserDto } from '../dto/users.dto';
 
 @Entity('users')
 export class UserEntity {
