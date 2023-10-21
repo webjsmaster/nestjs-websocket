@@ -10,13 +10,17 @@ import {
 } from './dto/users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/users.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, In, Repository } from 'typeorm';
+import { UserFriendsEntity } from './entity/users-friends.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+
+    @InjectRepository(UserFriendsEntity)
+    private readonly userFriendsRepository: Repository<UserFriendsEntity>,
   ) {}
 
   async getAll(): Promise<UserEntity[]> {
@@ -95,6 +99,12 @@ export class UsersService {
   async getUserByEmail(email: string): Promise<UserEntity> {
     const user = await this.userRepository.findOne({ where: { email } });
     return !!user ? user : null;
+  }
+
+  async getUserByArrayId(arrId: string[]): Promise<UserFriendsEntity[]> {
+    return await this.userFriendsRepository.find({
+      where: { id: In([...arrId]) },
+    });
   }
 
   async testing() {

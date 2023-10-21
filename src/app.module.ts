@@ -7,11 +7,13 @@ import { typeOrmConfig } from './typeorm.config';
 import { AuthModule } from './api/auth/auth.module';
 import { UsersModule } from './api/users/users.module';
 import { ConfigModule } from '@nestjs/config';
+import { FriendsModule } from './api/friends/friends.module';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
+    FriendsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',

@@ -34,6 +34,8 @@ export class AuthService {
       userDTO.password,
       +process.env.CRYPT_SALT,
     );
+
+    console.log('🚀:', userDTO)
     return await this.usersService.create({
       ...userDTO,
       password: hashPassword,

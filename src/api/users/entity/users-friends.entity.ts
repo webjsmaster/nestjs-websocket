@@ -8,13 +8,14 @@ import {
 import { Exclude } from 'class-transformer';
 
 @Entity('users')
-export class UserEntity {
+export class UserFriendsEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
   login: string;
 
+  @Exclude()
   @Column()
   email: string;
 
@@ -22,12 +23,14 @@ export class UserEntity {
   @Column()
   password: string;
 
+  @Exclude()
   @Column()
   version: number;
 
   @Column()
   avatar: string;
 
+  @Exclude()
   @CreateDateColumn({
     transformer: {
       from: (value: Date) => value.getTime(),
@@ -36,6 +39,7 @@ export class UserEntity {
   })
   createdAt: number;
 
+  @Exclude()
   @UpdateDateColumn({
     transformer: {
       from: (value: Date) => value.getTime(),
@@ -43,13 +47,4 @@ export class UserEntity {
     },
   })
   updatedAt: number;
-
-  constructor(partial: Partial<UserEntity>) {
-    Object.assign(this, partial);
-  }
-
-  toResponse() {
-    const { id, login, version, createdAt, updatedAt, email, avatar } = this;
-    return { id, login, version, createdAt, updatedAt, email, avatar };
-  }
 }

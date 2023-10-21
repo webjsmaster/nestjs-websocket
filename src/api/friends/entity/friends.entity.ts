@@ -5,28 +5,17 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 
-@Entity('users')
-export class UserEntity {
+@Entity('friends')
+export class FriendsEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  login: string;
+  one: string;
 
   @Column()
-  email: string;
-
-  @Exclude()
-  @Column()
-  password: string;
-
-  @Column()
-  version: number;
-
-  @Column()
-  avatar: string;
+  two: string;
 
   @CreateDateColumn({
     transformer: {
@@ -44,12 +33,12 @@ export class UserEntity {
   })
   updatedAt: number;
 
-  constructor(partial: Partial<UserEntity>) {
+  constructor(partial: Partial<FriendsEntity>) {
     Object.assign(this, partial);
   }
 
-  toResponse() {
-    const { id, login, version, createdAt, updatedAt, email, avatar } = this;
-    return { id, login, version, createdAt, updatedAt, email, avatar };
-  }
+  // toResponse() {
+  //   const { id, login, version, createdAt, updatedAt, email, avatar } = this;
+  //   return { id, login, version, createdAt, updatedAt, email, avatar };
+  // }
 }
