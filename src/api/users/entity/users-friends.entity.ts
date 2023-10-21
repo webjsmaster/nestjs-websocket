@@ -7,6 +7,8 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
+// entity для запроса getUserByArrayId, что-бы вернулся массив юзеров с ограниченными полями
+
 @Entity('users')
 export class UserFriendsEntity {
   @PrimaryGeneratedColumn('uuid')

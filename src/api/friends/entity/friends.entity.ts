@@ -1,7 +1,9 @@
+import { UserEntity } from 'src/api/users/entity/users.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -12,9 +14,11 @@ export class FriendsEntity {
   id: string;
 
   @Column()
+  @ManyToOne(() => UserEntity, (user) => user.id)
   one: string;
 
   @Column()
+  @ManyToOne(() => UserEntity, (user) => user.id)
   two: string;
 
   @CreateDateColumn({

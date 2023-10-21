@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FriendsEntity } from './entity/friends.entity';
-import { DeleteResult, Repository } from 'typeorm';
-import { CreateFriendsDto, GetFriendsDto } from './dto/friends.dto';
+import { Repository } from 'typeorm';
+import { CreateFriendsDto } from './dto/friends.dto';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -32,10 +32,20 @@ export class FriendsService {
     if (!checkUserTo || !checkUserFrom) {
       throw new ForbiddenException('One or both users do not exist');
     } else {
-      const friends = await this.friendsRepository.save({
-        ...createFriends,
+      const friend: FriendsEntity = await this.friendsRepository.findOne({
+        where: {
+          one: createFriends.one,
+          two: createFriends.two,
+        },
       });
-      return { status: 'ok' };
+      if (friend) {
+        throw new ForbiddenException('Users are already friends');
+      } else {
+        await this.friendsRepository.save({
+          ...createFriends,
+        });
+        return { status: 'ok' };
+      }
     }
   }
 
@@ -56,5 +66,20 @@ export class FriendsService {
         one: id,
       },
     });
+  }
+
+  async deleteFriend(id: string, friendId: string) {
+    const friend: FriendsEntity = await this.friendsRepository.findOne({
+      where: {
+        one: id,
+        two: friendId,
+      },
+    });
+    if (friend) {
+      await this.friendsRepository.delete({ id: friend.id });
+      return { status: 'ok' };
+    } else {
+      throw new NotFoundException('Users are not friends');
+    }
   }
 }

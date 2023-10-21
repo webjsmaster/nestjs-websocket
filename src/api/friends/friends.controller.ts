@@ -2,19 +2,19 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
-  Res,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { FriendsService } from './friends.service';
-import { CreateFriendsDto, GetFriendsDto } from './dto/friends.dto';
+import { CreateFriendsDto } from './dto/friends.dto';
 import { Public } from 'src/decorators/public.decorators';
 
 @Controller('friends')
@@ -34,6 +34,17 @@ export class FriendsController {
   @HttpCode(HttpStatus.CREATED)
   getMyFiends(@Param('id', ParseUUIDPipe) id: string) {
     return this.friendsService.getUserFriends(id);
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Public()
+  @Delete('/:id')
+  @HttpCode(HttpStatus.CREATED)
+  delete(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() { friendId }: { friendId: string },
+  ) {
+    return this.friendsService.deleteFriend(id, friendId);
   }
 
   @Public()
