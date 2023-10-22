@@ -14,20 +14,32 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { FriendsService } from './friends.service';
-import { CreateFriendsDto } from './dto/friends.dto';
+import {
+  CreateFriendsDto,
+  CustomEnum,
+  DeleteFriendsDto,
+  ResponseCreateDto,
+} from './dto/friends.dto';
 import { Public } from 'src/decorators/public.decorators';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserFriendsEntity } from '../users/entity/users-friends.entity';
 
+@ApiTags('friends')
 @Controller('friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
   // @UseInterceptors(ClassSerializerInterceptor)
-  @Public()
-  @Get()
-  getAll() {
-    return this.friendsService.getAll();
-  }
+  // @Public()
+  // @Get()
+  // getAll() {
+  //   return this.friendsService.getAll();
+  // }
 
+  @ApiResponse({
+    status: 201,
+    type: UserFriendsEntity,
+  })
   @UseInterceptors(ClassSerializerInterceptor)
   @Public()
   @Get('/:id')
@@ -36,17 +48,13 @@ export class FriendsController {
     return this.friendsService.getUserFriends(id);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Public()
-  @Delete('/:id')
-  @HttpCode(HttpStatus.CREATED)
-  delete(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() { friendId }: { friendId: string },
-  ) {
-    return this.friendsService.deleteFriend(id, friendId);
-  }
-
+  @ApiResponse({
+    status: 201,
+    schema: {
+      example: { status: 'ok' },
+    },
+  })
+  @ApiBody({ type: CreateFriendsDto })
   @Public()
   @UsePipes(ValidationPipe)
   @UseInterceptors(ClassSerializerInterceptor)
@@ -54,5 +62,23 @@ export class FriendsController {
   @HttpCode(HttpStatus.CREATED)
   create(@Body() CreateFriends: CreateFriendsDto) {
     return this.friendsService.create(CreateFriends);
+  }
+
+  @ApiResponse({
+    status: 201,
+    schema: {
+      example: { status: 'ok' },
+    },
+  })
+  @ApiBody({ type: DeleteFriendsDto })
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Public()
+  @Delete('/:id')
+  @HttpCode(HttpStatus.CREATED)
+  delete(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() { friendId }: DeleteFriendsDto,
+  ) {
+    return this.friendsService.deleteFriend(id, friendId);
   }
 }

@@ -4,11 +4,22 @@ import { ValidationPipe } from '@nestjs/common';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { json } from 'express';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 const port = +process.env.API_PORT || 8080;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const config = new DocumentBuilder()
+    .setTitle('Websocket example')
+    .setDescription('The websocket API description')
+    .setVersion('1.0')
+    .addTag('websocket')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   app.useGlobalPipes(new ValidationPipe()); // валидация
   app.enableCors();

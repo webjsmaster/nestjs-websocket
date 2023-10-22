@@ -10,7 +10,7 @@ import {
 } from './dto/users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/users.entity';
-import { DeleteResult, In, Repository } from 'typeorm';
+import { DeleteResult, In, Like, Repository } from 'typeorm';
 import { UserFriendsEntity } from './entity/users-friends.entity';
 
 @Injectable()
@@ -25,6 +25,14 @@ export class UsersService {
 
   async getAll(): Promise<UserEntity[]> {
     return await this.userRepository.find();
+  }
+
+  async getMany({ value }: { value: string }): Promise<UserFriendsEntity[]> {
+    return await this.userFriendsRepository.find({
+      where: {
+        login: Like(`${value}%`),
+      },
+    });
   }
 
   async getOne(id: string): Promise<UserEntity> {
@@ -82,10 +90,11 @@ export class UsersService {
     return await this.getOne(user.id);
   }
 
-  async delete(id: string): Promise<DeleteResult> {
+  async delete(id: string): Promise<{ status: string }> {
     const user: UserEntity = await this.getOne(id);
     if (user) {
-      return await this.userRepository.delete({ id: user.id });
+      await this.userRepository.delete({ id: user.id });
+      return { status: 'ok' };
     } else {
       throw new NotFoundException('User not found');
     }

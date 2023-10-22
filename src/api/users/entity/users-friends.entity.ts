@@ -6,32 +6,40 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 // entity для запроса getUserByArrayId, что-бы вернулся массив юзеров с ограниченными полями
 
 @Entity('users')
 export class UserFriendsEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiProperty()
   @Column()
   login: string;
 
+  @ApiHideProperty()
   @Exclude()
   @Column()
   email: string;
 
+  @ApiHideProperty()
   @Exclude()
   @Column()
   password: string;
 
+  @ApiHideProperty()
   @Exclude()
   @Column()
   version: number;
 
+  @ApiProperty()
   @Column()
   avatar: string;
 
+  @ApiHideProperty()
   @Exclude()
   @CreateDateColumn({
     transformer: {
@@ -41,6 +49,7 @@ export class UserFriendsEntity {
   })
   createdAt: number;
 
+  @ApiHideProperty()
   @Exclude()
   @UpdateDateColumn({
     transformer: {

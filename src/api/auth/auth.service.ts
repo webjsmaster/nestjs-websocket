@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserEntity } from '../users/entity/users.entity';
 import * as process from 'process';
-import { RefreshDto } from './dto/refresh.dto';
+import { RefreshTokenDto } from './dto/refresh.dto';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +42,7 @@ export class AuthService {
     });
   }
 
-  async refresh(refreshData: RefreshDto) {
+  async refresh(refreshData: RefreshTokenDto) {
     const user = this.jwtService.verify(refreshData.refreshToken);
     return {
       accessToken: await this.generateAccessToken(user),

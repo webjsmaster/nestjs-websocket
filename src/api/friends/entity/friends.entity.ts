@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from 'src/api/users/entity/users.entity';
 import {
   Column,
@@ -10,17 +11,21 @@ import {
 
 @Entity('friends')
 export class FriendsEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiProperty()
   @Column()
   @ManyToOne(() => UserEntity, (user) => user.id)
   one: string;
 
+  @ApiProperty()
   @Column()
   @ManyToOne(() => UserEntity, (user) => user.id)
   two: string;
 
+  @ApiProperty()
   @CreateDateColumn({
     transformer: {
       from: (value: Date) => value.getTime(),
@@ -29,6 +34,7 @@ export class FriendsEntity {
   })
   createdAt: number;
 
+  @ApiProperty()
   @UpdateDateColumn({
     transformer: {
       from: (value: Date) => value.getTime(),
@@ -40,9 +46,4 @@ export class FriendsEntity {
   constructor(partial: Partial<FriendsEntity>) {
     Object.assign(this, partial);
   }
-
-  // toResponse() {
-  //   const { id, login, version, createdAt, updatedAt, email, avatar } = this;
-  //   return { id, login, version, createdAt, updatedAt, email, avatar };
-  // }
 }

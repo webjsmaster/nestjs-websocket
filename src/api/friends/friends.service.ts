@@ -68,7 +68,10 @@ export class FriendsService {
     });
   }
 
-  async deleteFriend(id: string, friendId: string) {
+  async deleteFriend(
+    id: string,
+    friendId: string,
+  ): Promise<{ status: string }> {
     const friend: FriendsEntity = await this.friendsRepository.findOne({
       where: {
         one: id,
