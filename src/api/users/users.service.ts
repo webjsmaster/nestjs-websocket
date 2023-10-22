@@ -10,7 +10,7 @@ import {
 } from './dto/users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/users.entity';
-import { DeleteResult, In, Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { UserFriendsEntity } from './entity/users-friends.entity';
 
 @Injectable()

@@ -14,12 +14,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { FriendsService } from './friends.service';
-import {
-  CreateFriendsDto,
-  CustomEnum,
-  DeleteFriendsDto,
-  ResponseCreateDto,
-} from './dto/friends.dto';
+import { CreateFriendsDto, DeleteFriendsDto } from './dto/friends.dto';
 import { Public } from 'src/decorators/public.decorators';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserFriendsEntity } from '../users/entity/users-friends.entity';

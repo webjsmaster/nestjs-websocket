@@ -26,12 +26,3 @@ export class DeleteFriendsDto {
   @IsNotEmpty()
   readonly friendId: string;
 }
-
-export class ResponseCreateDto {
-  @ApiProperty()
-  readonly status: CustomEnum;
-}
-
-export enum CustomEnum {
-  'ok',
-}

@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { timestamp } from 'rxjs';
 
 export class RefreshTokenDto {
   @ApiProperty()
