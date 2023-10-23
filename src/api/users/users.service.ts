@@ -29,26 +29,20 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async getMany({ value }: { value: string }, res: Response) {
+  async getMany({
+    value,
+  }: {
+    value: string;
+  }): Promise<UserFriendsEntity[] | []> {
     if (value === undefined) {
       throw new BadRequestException('Incorrect query parameters are specified');
     }
 
-    const result = await this.userFriendsRepository.find({
+    return await this.userFriendsRepository.find({
       where: {
         login: Like(`%${value}%`),
       },
     });
-
-    if (value && result.length) {
-      res.send(result);
-    } else {
-      res.send({
-        statusCode: 204,
-        error: 'No Content',
-        message: 'Users not found',
-      });
-    }
   }
 
   async getOne(id: string): Promise<UserEntity> {

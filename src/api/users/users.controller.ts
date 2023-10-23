@@ -64,15 +64,14 @@ export class UsersController {
     status: 200,
     type: [UserFriendsEntity],
   })
-  @ApiNoContentMessage('Users not found')
   @ApiNotAuth()
   @ApiBadReqMessage('Incorrect query parameters are specified')
   @ApiQuery({ name: 'value', type: String })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/find')
   @HttpCode(HttpStatus.OK)
-  getMany(@Query() value: { value: string }, @Res() res: Response) {
-    return this.usersService.getMany(value, res);
+  getMany(@Query() value: { value: string }) {
+    return this.usersService.getMany(value);
   }
 
   @ApiOperation({ summary: 'Get user by id' })
