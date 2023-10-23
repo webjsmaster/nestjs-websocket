@@ -23,19 +23,33 @@ import { JwtRefreshGuard } from '../../guards/jwt-refresh.guard';
 
 import { Public } from '../../decorators/public.decorators';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiForbiddenResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { UserEntity } from '../users/entity/users.entity';
+import {
+  ApiBadReqMessage,
+  ApiForbiddenMessage,
+  ApiNotAuth,
+  ApiUnauthorizedMessage,
+} from 'src/decorators/response.decorators';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Login user' })
   @ApiResponse({
     status: 200,
-    description: 'Авторизация по email',
     type: ResponseAuthDto,
   })
+  @ApiForbiddenMessage('Incorrect email or password')
   @ApiBody({ type: LoginUsersDto })
   @Public()
   @UsePipes(ValidationPipe)
@@ -45,11 +59,21 @@ export class AuthController {
     return this.authService.login(userDTO);
   }
 
+  @ApiOperation({ summary: 'Registration user' })
   @ApiResponse({
     status: 201,
     description: 'Registration',
     type: UserEntity,
   })
+  @ApiBadReqMessage([
+    'login should not be empty',
+    'login must be a string',
+    'email should not be empty',
+    'email must be an email',
+    'email must be a string',
+    'password should not be empty',
+    'password must be a string',
+  ])
   @ApiBody({ type: CreateUsersDto })
   @Public()
   @UseInterceptors(ClassSerializerInterceptor)
@@ -60,11 +84,14 @@ export class AuthController {
     return this.authService.signup(userDTO);
   }
 
+  @ApiOperation({ summary: 'Refresh token' })
   @ApiResponse({
     status: 200,
     description: 'Refresh token',
     type: ResponseAuthDto,
   })
+  @ApiForbiddenMessage('RefreshToken no valid')
+  @ApiUnauthorizedMessage(['RefreshToken should not be empty'])
   @ApiBody({ type: RefreshTokenDto })
   @Public()
   @UsePipes(ValidationPipe)
@@ -75,11 +102,13 @@ export class AuthController {
     return this.authService.refresh(refreshToken);
   }
 
+  @ApiOperation({ summary: 'Checking token activity' })
   @ApiResponse({
     status: 200,
     description: 'Check auth user',
     type: ResponseCheckAuthUserDto,
   })
+  @ApiNotAuth()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {

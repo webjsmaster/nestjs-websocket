@@ -8,8 +8,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { FriendsEntity } from './entity/friends.entity';
 import { Repository } from 'typeorm';
-import { CreateFriendsDto } from './dto/friends.dto';
 import { UsersService } from '../users/users.service';
+import { CreateFriendDto } from './dto/friends.dto';
 
 @Injectable()
 export class FriendsService {
@@ -25,24 +25,27 @@ export class FriendsService {
     return await this.friendsRepository.find();
   }
 
-  async create(createFriends: CreateFriendsDto) {
-    const checkUserTo = await this.usersRepository.getOne(createFriends.one);
-    const checkUserFrom = await this.usersRepository.getOne(createFriends.two);
+  async create(id: string, createFriends: CreateFriendDto) {
+    const checkUserTo = await this.usersRepository.getOne(id);
+    const checkUserFrom = await this.usersRepository.getOne(
+      createFriends.friendId,
+    );
 
     if (!checkUserTo || !checkUserFrom) {
       throw new ForbiddenException('One or both users do not exist');
     } else {
       const friend: FriendsEntity = await this.friendsRepository.findOne({
         where: {
-          one: createFriends.one,
-          two: createFriends.two,
+          one: id,
+          two: createFriends.friendId,
         },
       });
       if (friend) {
         throw new ForbiddenException('Users are already friends');
       } else {
         await this.friendsRepository.save({
-          ...createFriends,
+          one: id,
+          two: createFriends.friendId,
         });
         return { status: 'ok' };
       }

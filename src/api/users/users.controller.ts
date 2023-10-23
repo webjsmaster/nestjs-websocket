@@ -6,11 +6,14 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
   Query,
+  Res,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -21,9 +24,25 @@ import {
   UpdateAvatarUserDto,
   UpdateUserDto,
 } from './dto/users.dto';
-import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserFriendsEntity } from './entity/users-friends.entity';
 import { UserEntity } from './entity/users.entity';
+import {
+  ApiBadReqMessage,
+  ApiBadReqUUIDNoValidation,
+  ApiForbiddenMessage,
+  ApiNoContentMessage,
+  ApiNotAuth,
+  ApiNotFoundMessage,
+} from 'src/decorators/response.decorators';
+import { Response } from 'express';
+import { ClosedAccessGuard } from 'src/guards/closed-access.guard';
 import { Public } from 'src/decorators/public.decorators';
 
 //npx @nestjs/cli g c users
@@ -40,22 +59,29 @@ export class UsersController {
     return this.usersService.getAll();
   }
 
+  @ApiOperation({ summary: 'Search for users by login' })
   @ApiResponse({
     status: 200,
-    type: UserFriendsEntity,
+    type: [UserFriendsEntity],
   })
+  @ApiNoContentMessage('Users not found')
+  @ApiNotAuth()
+  @ApiBadReqMessage('Incorrect query parameters are specified')
   @ApiQuery({ name: 'value', type: String })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/find')
   @HttpCode(HttpStatus.OK)
-  getMany(@Query() value: { value: string }) {
-    return this.usersService.getMany(value);
+  getMany(@Query() value: { value: string }, @Res() res: Response) {
+    return this.usersService.getMany(value, res);
   }
 
+  @ApiOperation({ summary: 'Get user by id' })
   @ApiResponse({
     status: 200,
     type: UserEntity,
   })
+  @ApiNotAuth()
+  @ApiBadReqUUIDNoValidation()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   @HttpCode(HttpStatus.OK)
@@ -63,12 +89,10 @@ export class UsersController {
     return this.usersService.getOne(id);
   }
 
-  @ApiResponse({
-    status: 201,
-    description: 'Create user',
-    type: UserEntity,
-  })
+  @ApiOperation({ summary: 'This endpoint is not used from outside' })
+  @ApiForbiddenMessage('Forbidden resource')
   @ApiBody({ type: CreateUsersDto })
+  @UseGuards(ClosedAccessGuard)
   @UsePipes(ValidationPipe)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
@@ -101,14 +125,18 @@ export class UsersController {
     return this.usersService.updateAvatar(id, avatar);
   }
 
+  @ApiOperation({ summary: 'Removing user' })
   @ApiResponse({
-    status: 204,
+    status: 200,
     schema: {
       example: { status: 'ok' },
     },
   })
+  @ApiNotFoundMessage('User not found')
+  @ApiBadReqUUIDNoValidation()
+  @ApiNotAuth()
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   delete(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.delete(id);
   }

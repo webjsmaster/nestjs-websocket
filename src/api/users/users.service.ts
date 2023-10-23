@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -12,6 +13,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/users.entity';
 import { In, Like, Repository } from 'typeorm';
 import { UserFriendsEntity } from './entity/users-friends.entity';
+import { Response } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -27,12 +29,26 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async getMany({ value }: { value: string }): Promise<UserFriendsEntity[]> {
-    return await this.userFriendsRepository.find({
+  async getMany({ value }: { value: string }, res: Response) {
+    if (value === undefined) {
+      throw new BadRequestException('Incorrect query parameters are specified');
+    }
+
+    const result = await this.userFriendsRepository.find({
       where: {
-        login: Like(`${value}%`),
+        login: Like(`%${value}%`),
       },
     });
+
+    if (value && result.length) {
+      res.send(result);
+    } else {
+      res.send({
+        statusCode: 204,
+        error: 'No Content',
+        message: 'Users not found',
+      });
+    }
   }
 
   async getOne(id: string): Promise<UserEntity> {

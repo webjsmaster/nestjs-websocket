@@ -1,26 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsUUID } from 'class-validator';
 
-export class CreateFriendsDto {
+export class CreateFriendDto {
   @ApiProperty()
   @IsUUID()
   @IsNotEmpty()
-  readonly one: string;
-
-  @ApiProperty()
-  @IsUUID()
-  @IsNotEmpty()
-  readonly two: string;
+  readonly friendId: string;
 }
 
-export class GetFriendsDto {
+export class GetFriendDto {
   @ApiProperty()
   @IsUUID()
   @IsNotEmpty()
   readonly id: string;
 }
 
-export class DeleteFriendsDto {
+export class DeleteFriendDto {
   @ApiProperty()
   @IsUUID()
   @IsNotEmpty()

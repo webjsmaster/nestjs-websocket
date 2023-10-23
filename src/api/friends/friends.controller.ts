@@ -14,10 +14,24 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { FriendsService } from './friends.service';
-import { CreateFriendsDto, DeleteFriendsDto } from './dto/friends.dto';
 import { Public } from 'src/decorators/public.decorators';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiForbiddenResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserFriendsEntity } from '../users/entity/users-friends.entity';
+import { CreateFriendDto, DeleteFriendDto } from './dto/friends.dto';
+import {
+  ApiBadReqMessage,
+  ApiBadReqUUIDNoValidation,
+  ApiForbiddenMessage,
+  ApiNotAuth,
+  ApiStatusOkResponse,
+} from 'src/decorators/response.decorators';
 
 @ApiTags('friends')
 @Controller('friends')
@@ -31,48 +45,55 @@ export class FriendsController {
   //   return this.friendsService.getAll();
   // }
 
+  @ApiOperation({ summary: 'Get all friends user' })
   @ApiResponse({
     status: 201,
     type: UserFriendsEntity,
   })
+  @ApiBadReqUUIDNoValidation()
+  @ApiNotAuth()
   @UseInterceptors(ClassSerializerInterceptor)
-  @Public()
   @Get('/:id')
   @HttpCode(HttpStatus.CREATED)
   getMyFiends(@Param('id', ParseUUIDPipe) id: string) {
     return this.friendsService.getUserFriends(id);
   }
 
+  @ApiOperation({ summary: 'Add user as friend' })
   @ApiResponse({
     status: 201,
     schema: {
       example: { status: 'ok' },
     },
   })
-  @ApiBody({ type: CreateFriendsDto })
-  @Public()
+  @ApiNotAuth()
+  @ApiForbiddenMessage('Users are already friends')
+  @ApiBadReqUUIDNoValidation()
+  @ApiBadReqMessage(['friendId must be a UUID', 'friendId should not be empty'])
+  @ApiBody({ type: CreateFriendDto })
   @UsePipes(ValidationPipe)
   @UseInterceptors(ClassSerializerInterceptor)
-  @Post()
+  @Post(':id')
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() CreateFriends: CreateFriendsDto) {
-    return this.friendsService.create(CreateFriends);
+  create(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() friendId: CreateFriendDto,
+  ) {
+    return this.friendsService.create(id, friendId);
   }
 
-  @ApiResponse({
-    status: 201,
-    schema: {
-      example: { status: 'ok' },
-    },
-  })
-  @ApiBody({ type: DeleteFriendsDto })
+  @ApiOperation({ summary: 'Remove a user from friends' })
+  @ApiStatusOkResponse()
+  @ApiBadReqUUIDNoValidation()
+  @ApiBadReqMessage(['friendId must be a UUID', 'friendId should not be empty'])
+  @ApiNotAuth()
+  @ApiBody({ type: DeleteFriendDto })
   @UseInterceptors(ClassSerializerInterceptor)
-  @Public()
   @Delete('/:id')
   @HttpCode(HttpStatus.CREATED)
   delete(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() { friendId }: DeleteFriendsDto,
+    @Body() { friendId }: DeleteFriendDto,
   ) {
     return this.friendsService.deleteFriend(id, friendId);
   }

@@ -16,6 +16,12 @@ async function bootstrap() {
     .setDescription('The websocket API description')
     .setVersion('1.0')
     .addTag('websocket')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      in: 'header',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

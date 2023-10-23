@@ -41,6 +41,11 @@ export class JwtAuthGuard implements CanActivate {
         secret: process.env.JWT_SECRET_KEY,
       });
 
+      //? если id из параметра запроса не совпадает с id из токена
+      if (req.params.id && req.params.id !== user.id) {
+        throw new Error();
+      }
+
       req.user = user;
       return true;
     } catch (error) {
