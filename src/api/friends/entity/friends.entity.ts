@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -17,12 +19,12 @@ export class FriendsEntity {
 
   @ApiProperty()
   @Column()
-  @ManyToOne(() => UserEntity, (user) => user.id)
+  @OneToOne(() => UserEntity, (user) => user.id)
   public one: string;
 
   @ApiProperty()
   @Column()
-  @ManyToOne(() => UserEntity, (user) => user.id)
+  @OneToOne(() => UserEntity, (user) => user.id)
   public two: string;
 
   @ApiProperty()
