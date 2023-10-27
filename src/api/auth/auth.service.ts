@@ -2,7 +2,7 @@ import { Body, ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateUsersDto, LoginUsersDto } from '../users/dto/users.dto';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { UserEntity } from '../users/entity/users.entity';
 import * as process from 'process';
 import { RefreshTokenDto } from './dto/refresh.dto';
@@ -35,7 +35,6 @@ export class AuthService {
       +process.env.CRYPT_SALT,
     );
 
-    console.log('🚀:', userDTO)
     return await this.usersService.create({
       ...userDTO,
       password: hashPassword,

@@ -1,8 +1,10 @@
 import {
   BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import {
   CreateUsersDto,
@@ -11,9 +13,10 @@ import {
 } from './dto/users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/users.entity';
-import { In, Like, Repository } from 'typeorm';
+import { In, Like, Not, Repository } from 'typeorm';
 import { UserFriendsEntity } from './entity/users-friends.entity';
-import { Response } from 'express';
+import { getUserIdToHeadersAuth } from 'src/helper/getUserToHeadersAuth';
+
 
 @Injectable()
 export class UsersService {
@@ -29,19 +32,18 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async getMany({
-    value,
-  }: {
-    value: string;
-  }): Promise<UserFriendsEntity[] | []> {
+  async getMany({value}: { value: string}, body: Body): Promise<UserFriendsEntity[] | []> {
     if (value === undefined) {
       throw new BadRequestException('Incorrect query parameters are specified');
     }
 
+    if (!value) return []
     return await this.userFriendsRepository.find({
       where: {
         login: Like(`%${value}%`),
+        id: Not(getUserIdToHeadersAuth(body)),
       },
+      relations:['id']
     });
   }
 

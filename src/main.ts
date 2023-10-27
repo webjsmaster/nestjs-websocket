@@ -3,8 +3,10 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
-import { json } from 'express';
+import express, { json } from 'express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
+import { timeout } from 'rxjs';
 
 const port = +process.env.API_PORT || 8080;
 
@@ -36,7 +38,10 @@ async function bootstrap() {
   app.useGlobalGuards(new JwtAuthGuard(new JwtService(), reflector));
   // app.useGlobalFilters(new AllExceptionsFilter(new HttpAdapterHost<AbstractHttpAdapter>()))
 
+  // app.useGlobalInterceptors(new TimeoutInterceptor());
+
   await app.listen(port);
+
 }
 
 bootstrap().then(() => {

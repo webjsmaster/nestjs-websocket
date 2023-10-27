@@ -18,12 +18,12 @@ export class FriendsEntity {
   @ApiProperty()
   @Column()
   @ManyToOne(() => UserEntity, (user) => user.id)
-  one: string;
+  public one: string;
 
   @ApiProperty()
   @Column()
   @ManyToOne(() => UserEntity, (user) => user.id)
-  two: string;
+  public two: string;
 
   @ApiProperty()
   @CreateDateColumn({

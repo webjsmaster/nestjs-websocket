@@ -25,11 +25,9 @@ import { Public } from '../../decorators/public.decorators';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import {
   ApiBody,
-  ApiForbiddenResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserEntity } from '../users/entity/users.entity';
 import {
@@ -38,6 +36,7 @@ import {
   ApiNotAuth,
   ApiUnauthorizedMessage,
 } from 'src/decorators/response.decorators';
+
 
 @ApiTags('auth')
 @Controller('auth')
@@ -102,6 +101,9 @@ export class AuthController {
     return this.authService.refresh(refreshToken);
   }
 
+
+
+  
   @ApiOperation({ summary: 'Checking token activity' })
   @ApiResponse({
     status: 200,

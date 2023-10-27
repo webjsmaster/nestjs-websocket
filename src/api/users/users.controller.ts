@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   NotFoundException,
@@ -44,6 +45,7 @@ import {
 import { Response } from 'express';
 import { ClosedAccessGuard } from 'src/guards/closed-access.guard';
 import { Public } from 'src/decorators/public.decorators';
+import { getUserIdToHeadersAuth } from 'src/helper/getUserToHeadersAuth';
 
 //npx @nestjs/cli g c users
 
@@ -70,8 +72,8 @@ export class UsersController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/find')
   @HttpCode(HttpStatus.OK)
-  getMany(@Query() value: { value: string }) {
-    return this.usersService.getMany(value);
+  getMany(@Query() value: { value: string }, @Headers() body) {
+    return this.usersService.getMany(value, body);
   }
 
   @ApiOperation({ summary: 'Get user by id' })
