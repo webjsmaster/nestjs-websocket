@@ -16,6 +16,7 @@ import { UserEntity } from './entity/users.entity';
 import { In, Like, Not, Repository } from 'typeorm';
 import { UserFriendsEntity } from './entity/users-friends.entity';
 import { getUserIdToHeadersAuth } from 'src/helper/getUserToHeadersAuth';
+import { PageDto } from '../page/page.dto';
 
 
 @Injectable()
@@ -32,7 +33,7 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async getMany({value}: { value: string}, body: Body): Promise<UserFriendsEntity[] | []> {
+  async getMany({value}: { value: string}, body: Body): Promise<PageDto<UserFriendsEntity[] | []>> {
     if (value === undefined) {
       throw new BadRequestException('Incorrect query parameters are specified');
     }
@@ -43,7 +44,6 @@ export class UsersService {
         login: Like(`%${value}%`),
         id: Not(getUserIdToHeadersAuth(body)),
       },
-      relations:['id']
     });
   }
 

@@ -141,9 +141,4 @@ export class UsersController {
   delete(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.delete(id);
   }
-
-  @Get('/test/1')
-  testing() {
-    return this.usersService.testing();
-  }
 }
