@@ -26,11 +26,13 @@ import {
   UpdateUserDto,
 } from './dto/users.dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { UserFriendsEntity } from './entity/users-friends.entity';
 import { UserEntity } from './entity/users.entity';
@@ -41,11 +43,14 @@ import {
   ApiNoContentMessage,
   ApiNotAuth,
   ApiNotFoundMessage,
+  ApiPaginatedResponse,
 } from 'src/decorators/response.decorators';
 import { Response } from 'express';
 import { ClosedAccessGuard } from 'src/guards/closed-access.guard';
 import { Public } from 'src/decorators/public.decorators';
 import { getUserIdToHeadersAuth } from 'src/helper/getUserToHeadersAuth';
+import { PageOptionsDto } from '../page/page-option.dto';
+import { PageDto } from '../page/page.dto';
 
 //npx @nestjs/cli g c users
 
@@ -61,19 +66,20 @@ export class UsersController {
     return this.usersService.getAll();
   }
 
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Search for users by login' })
-  @ApiResponse({
-    status: 200,
-    type: [UserFriendsEntity],
-  })
+  @ApiPaginatedResponse(UserFriendsEntity)
   @ApiNotAuth()
   @ApiBadReqMessage('Incorrect query parameters are specified')
   @ApiQuery({ name: 'value', type: String })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/find')
   @HttpCode(HttpStatus.OK)
-  getMany(@Query() value: { value: string }, @Headers() body) {
-    return this.usersService.getMany(value, body);
+  getMany(
+    @Query() value: { value: string },
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Headers() body): Promise<PageDto<UserFriendsEntity>> {
+    return this.usersService.getMany(pageOptionsDto, value, body);
   }
 
   @ApiOperation({ summary: 'Get user by id' })

@@ -17,6 +17,8 @@ import { In, Like, Not, Repository } from 'typeorm';
 import { UserFriendsEntity } from './entity/users-friends.entity';
 import { getUserIdToHeadersAuth } from 'src/helper/getUserToHeadersAuth';
 import { PageDto } from '../page/page.dto';
+import { PageOptionsDto } from '../page/page-option.dto';
+import { PageMetaDto } from '../page/page-meta.dto';
 
 
 @Injectable()
@@ -33,18 +35,32 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async getMany({value}: { value: string}, body: Body): Promise<PageDto<UserFriendsEntity[] | []>> {
+  async getMany(
+      pageOptionsDto: PageOptionsDto, 
+      {value}: { value: string}, 
+      body: Body
+    ): Promise<PageDto<UserFriendsEntity>> {
     if (value === undefined) {
       throw new BadRequestException('Incorrect query parameters are specified');
     }
 
-    if (!value) return []
-    return await this.userFriendsRepository.find({
-      where: {
-        login: Like(`%${value}%`),
-        id: Not(getUserIdToHeadersAuth(body)),
-      },
-    });
+    const queryBuilder = this.userFriendsRepository.createQueryBuilder('user')
+
+    queryBuilder
+    .where("user.login like :value", {value: '%' + value + '%' })
+    .andWhere("user.id != :id", {id: getUserIdToHeadersAuth(body)})
+    .orderBy("user.createdAt", pageOptionsDto.order)
+    .skip(pageOptionsDto.skip)
+    .take(pageOptionsDto.take);
+
+    const itemCount = await queryBuilder.getCount();
+    const { entities } = await queryBuilder.getRawAndEntities()
+
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
+    if (!value) return new PageDto([], new PageMetaDto({ itemCount: 0 , pageOptionsDto: { skip: 0, page: 1, take: 0} }))
+
+    return new PageDto(entities, pageMetaDto);
   }
 
   async getOne(id: string): Promise<UserEntity> {
