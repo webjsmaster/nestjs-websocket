@@ -20,7 +20,6 @@ import { PageDto } from '../page/page.dto';
 import { PageOptionsDto } from '../page/page-option.dto';
 import { PageMetaDto } from '../page/page-meta.dto';
 
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -36,34 +35,28 @@ export class UsersService {
   }
 
   async getMany(
-<<<<<<< HEAD
     pageOptionsDto: PageOptionsDto,
     { value }: { value: string },
-=======
-      pageOptionsDto: PageOptionsDto, 
-      {value}: { value: string}, 
->>>>>>> a952be683be75a677ee8566d68d5ebfbf5e71d54
-      body: Body
-    ): Promise<PageDto<UserFriendsEntity>> {
+    body: Body,
+  ): Promise<PageDto<UserFriendsEntity>> {
     if (value === undefined) {
       throw new BadRequestException('Incorrect query parameters are specified');
     }
 
-    const queryBuilder = this.userFriendsRepository.createQueryBuilder('user')
+    const queryBuilder = this.userFriendsRepository.createQueryBuilder('user');
 
     queryBuilder
-    .where("user.login like :value", {value: '%' + value + '%' })
-    .andWhere("user.id != :id", {id: getUserIdToHeadersAuth(body)})
-    .orderBy("user.createdAt", pageOptionsDto.order)
-    .skip(pageOptionsDto.skip)
-    .take(pageOptionsDto.take);
+      .where('user.login like :value', { value: '%' + value + '%' })
+      .andWhere('user.id != :id', { id: getUserIdToHeadersAuth(body) })
+      .orderBy('user.createdAt', pageOptionsDto.order)
+      .skip(pageOptionsDto.skip)
+      .take(pageOptionsDto.take);
 
     const itemCount = await queryBuilder.getCount();
-    const { entities } = await queryBuilder.getRawAndEntities()
+    const { entities } = await queryBuilder.getRawAndEntities();
 
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
-<<<<<<< HEAD
     if (!value)
       return new PageDto(
         [],
@@ -72,9 +65,6 @@ export class UsersService {
           pageOptionsDto: { skip: 0, page: 1, take: 0 },
         }),
       );
-=======
-    if (!value) return new PageDto([], new PageMetaDto({ itemCount: 0 , pageOptionsDto: { skip: 0, page: 1, take: 0} }))
->>>>>>> a952be683be75a677ee8566d68d5ebfbf5e71d54
 
     return new PageDto(entities, pageMetaDto);
   }
