@@ -36,8 +36,8 @@ export class UsersService {
   }
 
   async getMany(
-      pageOptionsDto: PageOptionsDto, 
-      {value}: { value: string}, 
+    pageOptionsDto: PageOptionsDto,
+    { value }: { value: string },
       body: Body
     ): Promise<PageDto<UserFriendsEntity>> {
     if (value === undefined) {
@@ -58,7 +58,14 @@ export class UsersService {
 
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
-    if (!value) return new PageDto([], new PageMetaDto({ itemCount: 0 , pageOptionsDto: { skip: 0, page: 1, take: 0} }))
+    if (!value)
+      return new PageDto(
+        [],
+        new PageMetaDto({
+          itemCount: 0,
+          pageOptionsDto: { skip: 0, page: 1, take: 0 },
+        }),
+      );
 
     return new PageDto(entities, pageMetaDto);
   }
