@@ -36,8 +36,13 @@ export class UsersService {
   }
 
   async getMany(
+<<<<<<< HEAD
     pageOptionsDto: PageOptionsDto,
     { value }: { value: string },
+=======
+      pageOptionsDto: PageOptionsDto, 
+      {value}: { value: string}, 
+>>>>>>> a952be683be75a677ee8566d68d5ebfbf5e71d54
       body: Body
     ): Promise<PageDto<UserFriendsEntity>> {
     if (value === undefined) {
@@ -58,6 +63,7 @@ export class UsersService {
 
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
+<<<<<<< HEAD
     if (!value)
       return new PageDto(
         [],
@@ -66,6 +72,9 @@ export class UsersService {
           pageOptionsDto: { skip: 0, page: 1, take: 0 },
         }),
       );
+=======
+    if (!value) return new PageDto([], new PageMetaDto({ itemCount: 0 , pageOptionsDto: { skip: 0, page: 1, take: 0} }))
+>>>>>>> a952be683be75a677ee8566d68d5ebfbf5e71d54
 
     return new PageDto(entities, pageMetaDto);
   }
