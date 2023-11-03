@@ -62,9 +62,7 @@ export class FriendsController {
   @ApiOperation({ summary: 'Add user as friend' })
   @ApiResponse({
     status: 201,
-    schema: {
-      example: { status: 'ok' },
-    },
+    type: UserFriendsEntity
   })
   @ApiNotAuth()
   @ApiForbiddenMessage('Users are already friends')
@@ -78,7 +76,7 @@ export class FriendsController {
   create(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() friendId: CreateFriendDto,
-  ) {
+  ): Promise<UserFriendsEntity> {
     return this.friendsService.create(id, friendId);
   }
 
@@ -94,7 +92,7 @@ export class FriendsController {
   delete(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() { friendId }: DeleteFriendDto,
-  ) {
+  ): Promise<UserFriendsEntity> {
     return this.friendsService.deleteFriend(id, friendId);
   }
 }

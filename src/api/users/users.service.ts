@@ -78,6 +78,15 @@ export class UsersService {
     }
   }
 
+  async getOneForFriends(id: string): Promise<UserFriendsEntity> {
+    const user = await this.userFriendsRepository.findOne({ where: { id } });
+    if (user) {
+      return user;
+    } else {
+      throw new NotFoundException('User not found');
+    }
+  }
+
   async create(userInput: CreateUsersDto): Promise<UserEntity> {
     const checkUserLoginVerification = await this.getUserByLogin(
       userInput.login,

@@ -10,6 +10,7 @@ import { FriendsEntity } from './entity/friends.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { CreateFriendDto } from './dto/friends.dto';
+import { UserFriendsEntity } from '../users/entity/users-friends.entity';
 
 @Injectable()
 export class FriendsService {
@@ -25,7 +26,7 @@ export class FriendsService {
     return await this.friendsRepository.find();
   }
 
-  async create(id: string, createFriends: CreateFriendDto) {
+  async create(id: string, createFriends: CreateFriendDto): Promise<UserFriendsEntity> {
     const checkUserTo = await this.usersRepository.getOne(id);
     const checkUserFrom = await this.usersRepository.getOne(
       createFriends.friendId,
@@ -47,7 +48,7 @@ export class FriendsService {
           one: id,
           two: createFriends.friendId,
         });
-        return { status: 'ok' };
+        return  await this.usersRepository.getOneForFriends(createFriends.friendId)
       }
     }
   }
@@ -74,7 +75,7 @@ export class FriendsService {
   async deleteFriend(
     id: string,
     friendId: string,
-  ): Promise<{ status: string }> {
+  ): Promise<UserFriendsEntity> {
     const friend: FriendsEntity = await this.friendsRepository.findOne({
       where: {
         one: id,
@@ -83,7 +84,7 @@ export class FriendsService {
     });
     if (friend) {
       await this.friendsRepository.delete({ id: friend.id });
-      return { status: 'ok' };
+      return await this.usersRepository.getOneForFriends(friendId);
     } else {
       throw new NotFoundException('Users are not friends');
     }
