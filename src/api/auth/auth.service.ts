@@ -16,9 +16,11 @@ export class AuthService {
 
   async login(@Body() userDTO: LoginUsersDto) {
     const user = await this.validateUser(userDTO);
+    const {id,login,avatar} = user
     return {
       accessToken: await this.generateAccessToken(user),
       refreshToken: await this.generateRefreshToken(user),
+      user: {id,login,avatar}
     };
   }
 

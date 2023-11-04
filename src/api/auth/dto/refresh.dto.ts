@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import { UserFriendsEntity } from 'src/api/users/entity/users-friends.entity';
 
 export class RefreshTokenDto {
   @ApiProperty()
@@ -15,6 +16,10 @@ export class ResponseAuthDto {
   @ApiProperty()
   @IsNotEmpty()
   readonly refreshToken: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  user: UserFriendsEntity;
 }
 
 export class ResponseCheckAuthUserDto {
