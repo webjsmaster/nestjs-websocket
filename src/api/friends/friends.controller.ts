@@ -55,7 +55,7 @@ export class FriendsController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/:id')
   @HttpCode(HttpStatus.CREATED)
-  getMyFiends(@Param('id', ParseUUIDPipe) id: string) {
+  getUserFiends(@Param('id', ParseUUIDPipe) id: string) {
     return this.friendsService.getUserFriends(id);
   }
 

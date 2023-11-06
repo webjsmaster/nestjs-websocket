@@ -8,13 +8,14 @@ import { AuthModule } from './api/auth/auth.module';
 import { UsersModule } from './api/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { FriendsModule } from './api/friends/friends.module';
-import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
+import { MessagesModule } from './api/messages/messages.module';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
     FriendsModule,
+    MessagesModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -28,10 +29,10 @@ import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
       useClass: JwtAuthGuard,
     },
     SocketService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: TimeoutInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: TimeoutInterceptor,
+    // },
   ],
 })
 export class AppModule {}

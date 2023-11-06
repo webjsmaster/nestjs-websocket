@@ -41,8 +41,10 @@ export class JwtAuthGuard implements CanActivate {
         secret: process.env.JWT_SECRET_KEY,
       });
 
+      const path = req.route.path === '/message/:id'
+
       //? если id из параметра запроса не совпадает с id из токена
-      if (req.params.id && req.params.id !== user.id) {
+      if (req.params.id && req.params.id !== user.id && !path) {
         throw new Error();
       }
 
