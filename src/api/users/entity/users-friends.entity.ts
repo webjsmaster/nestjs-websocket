@@ -10,6 +10,7 @@ import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 // entity для запроса getUserByArrayId, что-бы вернулся массив юзеров с ограниченными полями
 
+@Entity('users')
 export class UserFriendsEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')

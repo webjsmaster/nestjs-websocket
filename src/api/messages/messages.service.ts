@@ -28,25 +28,21 @@ export class MessagesService {
 
 
   async create(id:string, body: {chatId: string, content: string}) {
-    const chat = await this.chatsService.getOne(body.chatId)
     const message:MessageNewEntity = await this.messagesRepository.save({
       user_id: id,
       chat_id: body.chatId,
       content: body.content
     })
 
-    await this.chatsService.update(chat.id, {messages: [message]});
-
     return message
   }
 
-  async getMessages(
-    id: string,
-    user: UserNewEntity,
+  async getChatMessages(
+    chatId: string,
     pageOptionsDto: PageOptionsDto,
   ) {
-    // const page = pageOptionsDto.page || 1
-    // const take = pageOptionsDto.take || 10
+    const page = pageOptionsDto.page || 1
+    const take = pageOptionsDto.take || 10
 
     // const promise1:Promise<MessageNewEntity[]> = new Promise(resolve => resolve(this.messagesRepository.find({
     //   where: {
@@ -64,11 +60,19 @@ export class MessagesService {
 
     // const messages = await Promise.all([promise1, promise2])
     // .then(([response1, response2]) => [...response1, ...response2])
+
+
+    const messages = await this.messagesRepository.find({
+      where: {
+        chat_id: chatId
+      }
+    })
+
     // const sortAndSlice = messages.sort((a,b) => a.createdAt - b.createdAt).slice((page - 1) * take, page * take)
-    // const pageMetaDto = new PageMetaDto({ itemCount: messages.length, pageOptionsDto });
+    const pageMetaDto = new PageMetaDto({ itemCount: messages.length, pageOptionsDto });
 
 
-    // return new PageDto(sortAndSlice, pageMetaDto);
+    return new PageDto(messages, pageMetaDto);
   }
 
   // async create(id: string, createMessage: CreateMessageDto) {

@@ -17,3 +17,16 @@ export class SendMessageDto {
     @IsNotEmpty()
     readonly friendId: string;
 }
+
+export class ConnectedSocketDto {
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    readonly id: string;
+
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    readonly recipientId: string;
+}
+

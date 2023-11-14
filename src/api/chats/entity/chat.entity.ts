@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { MessageNewEntity } from "src/api/messages/entity/new-messges.entity";
 import { UserNewEntity } from "src/api/users/entity/users-new.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 
 
@@ -12,7 +12,7 @@ export class ChatEntity {
     id?: string;
 
     @ApiProperty()
-    @ManyToOne(() => MessageNewEntity, (messages: MessageNewEntity) => messages.chat, {
+    @OneToMany(() => MessageNewEntity, (messages: MessageNewEntity) => messages.chat, {
         cascade: true
     })
     @JoinColumn({

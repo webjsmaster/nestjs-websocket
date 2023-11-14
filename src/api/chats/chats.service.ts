@@ -21,16 +21,20 @@ export class ChatService {
 
 
   async getAll () {
-    return await this.chatRepository.find();
+    return await this.chatRepository.find({
+      relations: ['messages']
+    });
   }
 
   async create (id:string, recipientId:string ) {
+    console.log('🤡:', id, recipientId)
     const checkChat = await this.chatRepository
       .createQueryBuilder('chats')
       .where('chats.users @> :users', {users: [id, recipientId]})
       .getOne()
   
     if (checkChat) return checkChat
+
     const chat = await this.chatRepository.save({
       users: [id, recipientId]
     })
