@@ -37,12 +37,10 @@ async function bootstrap() {
   app.useGlobalGuards(new JwtAuthGuard(new JwtService(), reflector));
   // app.useGlobalFilters(new AllExceptionsFilter(new HttpAdapterHost<AbstractHttpAdapter>()))
 
-  // app.useGlobalInterceptors(new TimeoutInterceptor());
-
   await app.listen(port);
 
 }
 
 bootstrap().then(() => {
-  console.log('App started on', port, 'port');
+  console.log('\x1b[91;1m' + '\x1b[107m' + '  App started on', '\x1b[92m' + '\x1b[107m' + port, '\x1b[91m' + 'port  ' + '\x1b[0m');
 });

@@ -12,26 +12,30 @@ import {
   UpdateUserDto,
 } from './dto/users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './entity/users.entity';
-import { In, Like, Not, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { UserFriendsEntity } from './entity/users-friends.entity';
 import { getUserIdToHeadersAuth } from 'src/helper/getUserToHeadersAuth';
 import { PageDto } from '../page/page.dto';
 import { PageOptionsDto } from '../page/page-option.dto';
 import { PageMetaDto } from '../page/page-meta.dto';
+import { UserNewEntity } from './entity/users-new.entity';
+import {v4 as uuidv4} from 'uuid';
+
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(UserNewEntity)
+    private readonly userRepository: Repository<UserNewEntity>,
 
     @InjectRepository(UserFriendsEntity)
     private readonly userFriendsRepository: Repository<UserFriendsEntity>,
   ) {}
 
-  async getAll(): Promise<UserEntity[]> {
-    return await this.userRepository.find();
+  async getAll(): Promise<UserNewEntity[]> {
+    return await this.userRepository.find({
+      relations: ['chats']
+    });
   }
 
   async getMany(
@@ -69,7 +73,7 @@ export class UsersService {
     return new PageDto(entities, pageMetaDto);
   }
 
-  async getOne(id: string): Promise<UserEntity> {
+  async getOne(id: string): Promise<UserNewEntity> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (user) {
       return user;
@@ -87,7 +91,7 @@ export class UsersService {
     }
   }
 
-  async create(userInput: CreateUsersDto): Promise<UserEntity> {
+  async create(userInput: CreateUsersDto): Promise<UserNewEntity> {
     const checkUserLoginVerification = await this.getUserByLogin(
       userInput.login,
     );
@@ -104,13 +108,13 @@ export class UsersService {
       const user = await this.userRepository.save({
         ...userInput,
         version: 1,
-        avatar: '',
+        avatar: ''
       });
       return await this.getOne(user.id);
     }
   }
 
-  async update(id: string, userInput: UpdateUserDto): Promise<UserEntity> {
+  async update(id: string, userInput: UpdateUserDto): Promise<UserNewEntity> {
     const user = await this.getOne(id);
     if (!user) throw new NotFoundException('User not found');
     if (userInput.oldPassword === user.password) {
@@ -134,7 +138,7 @@ export class UsersService {
   }
 
   async delete(id: string): Promise<{ status: string }> {
-    const user: UserEntity = await this.getOne(id);
+    const user: UserNewEntity = await this.getOne(id);
     if (user) {
       await this.userRepository.delete({ id: user.id });
       return { status: 'ok' };
@@ -143,12 +147,12 @@ export class UsersService {
     }
   }
 
-  async getUserByLogin(login: string): Promise<UserEntity> {
+  async getUserByLogin(login: string): Promise<UserNewEntity> {
     const user = await this.userRepository.findOne({ where: { login } });
     return !!user ? user : null;
   }
 
-  async getUserByEmail(email: string): Promise<UserEntity> {
+  async getUserByEmail(email: string): Promise<UserNewEntity> {
     const user = await this.userRepository.findOne({ where: { email } });
     return !!user ? user : null;
   }

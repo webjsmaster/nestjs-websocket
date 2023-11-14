@@ -2,15 +2,23 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { MessageNewEntity } from 'src/api/messages/entity/new-messges.entity';
+import { ChatEntity } from 'src/api/chats/entity/chat.entity';
 
-// entity для запроса getUserByArrayId, что-бы вернулся массив юзеров с ограниченными полями
 
-export class UserFriendsEntity {
+@Entity('users')
+export class UserNewEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -19,8 +27,7 @@ export class UserFriendsEntity {
   @Column()
   login: string;
 
-  @ApiHideProperty()
-  @Exclude()
+  @ApiProperty()
   @Column()
   email: string;
 
@@ -29,8 +36,7 @@ export class UserFriendsEntity {
   @Column()
   password: string;
 
-  @ApiHideProperty()
-  @Exclude()
+  @ApiProperty()
   @Column()
   version: number;
 
@@ -38,8 +44,7 @@ export class UserFriendsEntity {
   @Column()
   avatar: string;
 
-  @ApiHideProperty()
-  @Exclude()
+  @ApiProperty()
   @CreateDateColumn({
     transformer: {
       from: (value: Date) => value.getTime(),
@@ -48,8 +53,7 @@ export class UserFriendsEntity {
   })
   createdAt: number;
 
-  @ApiHideProperty()
-  @Exclude()
+  @ApiProperty()
   @UpdateDateColumn({
     transformer: {
       from: (value: Date) => value.getTime(),
@@ -57,4 +61,24 @@ export class UserFriendsEntity {
     },
   })
   updatedAt: number;
+
+  @OneToMany(() => MessageNewEntity, (message: MessageNewEntity) => message.user, {
+    cascade: true
+  })
+  messages: MessageNewEntity[]
+
+
+  @ManyToMany(() => ChatEntity)
+  @JoinTable({
+    name: 'users_chats',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'chat_id',
+      referencedColumnName: 'id'
+    }
+  })
+  chats: ChatEntity[]
 }

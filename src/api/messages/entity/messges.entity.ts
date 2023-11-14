@@ -10,7 +10,7 @@ import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 export type MessageStatus = 1 | 2 | 3
 
-@Entity('messages')
+// @Entity('messages')
 export class MessageEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
@@ -58,3 +58,5 @@ export class MessageEntity {
     Object.assign(this, partial);
   }
 }
+
+

@@ -6,6 +6,7 @@ import * as bcrypt from 'bcryptjs';
 import { UserEntity } from '../users/entity/users.entity';
 import * as process from 'process';
 import { RefreshTokenDto } from './dto/refresh.dto';
+import { UserNewEntity } from '../users/entity/users-new.entity';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +25,7 @@ export class AuthService {
     };
   }
 
-  async signup(@Body() userDTO: CreateUsersDto): Promise<UserEntity> {
+  async signup(@Body() userDTO: CreateUsersDto): Promise<UserNewEntity> {
     // TODO =================================>
     // const candidate = await this.usersService.getUserByLogin(userDTO.login)
     // if (candidate) {
@@ -51,7 +52,7 @@ export class AuthService {
     };
   }
 
-  async generateAccessToken(user: UserEntity) {
+  async generateAccessToken(user: UserNewEntity) {
     const payload = { login: user.login, id: user.id };
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET_KEY || 'SECRET_KEY',
@@ -59,7 +60,7 @@ export class AuthService {
     });
   }
 
-  async generateRefreshToken(user: UserEntity) {
+  async generateRefreshToken(user: UserNewEntity) {
     const payload = { login: user.login, id: user.id };
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET_REFRESH_KEY || 'SECRET_REFRESH_KEY',

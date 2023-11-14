@@ -9,6 +9,7 @@ import { UsersModule } from './api/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { FriendsModule } from './api/friends/friends.module';
 import { MessagesModule } from './api/messages/messages.module';
+import { ChatsModule } from './api/chats/chats.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MessagesModule } from './api/messages/messages.module';
     UsersModule,
     FriendsModule,
     MessagesModule,
+    ChatsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',

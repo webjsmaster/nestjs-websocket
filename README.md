@@ -1,3 +1,6 @@
+[DB Diagram](https://dbdiagram.io/d/654f4f037d8bbd6465f8faee)
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>

@@ -8,7 +8,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
-@Entity('users')
+
 export class UserEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')

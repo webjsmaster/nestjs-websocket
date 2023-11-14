@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserNewEntity } from 'src/api/users/entity/users-new.entity';
 import { UserEntity } from 'src/api/users/entity/users.entity';
 import {
   Column,
@@ -19,12 +20,12 @@ export class FriendsEntity {
 
   @ApiProperty()
   @Column()
-  @OneToOne(() => UserEntity, (user) => user.id)
+  @OneToOne(() => UserNewEntity, (user) => user.id)
   public one: string;
 
   @ApiProperty()
   @Column()
-  @OneToOne(() => UserEntity, (user) => user.id)
+  @OneToOne(() => UserNewEntity, (user) => user.id)
   public two: string;
 
   @ApiProperty()

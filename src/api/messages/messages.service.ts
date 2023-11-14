@@ -7,57 +7,78 @@ import { PageDto } from "../page/page.dto";
 import { PageMetaDto } from "../page/page-meta.dto";
 import { CreateMessageDto, GetMessagesDto, UpdateMessageDto } from "./dto/messages.dto";
 import { UsersService } from "../users/users.service";
+import { UserEntity } from "../users/entity/users.entity";
+import { MessageNewEntity } from "./entity/new-messges.entity";
+import { UserNewEntity } from "../users/entity/users-new.entity";
+import { ChatService } from "../chats/chats.service";
+import { ChatEntity } from "../chats/entity/chat.entity";
 
 
 
 @Injectable()
 export class MessagesService {
   constructor(
-    @InjectRepository(MessageEntity)
-    private readonly messagesRepository: Repository<MessageEntity>,
+    @InjectRepository(MessageNewEntity)
+    private readonly messagesRepository: Repository<MessageNewEntity>,
 
-    @Inject(forwardRef(() => UsersService))
-    private readonly usersRepository: UsersService,
+
+    @Inject(forwardRef(() => ChatService))
+    private readonly chatsService: ChatService,
   ) {}
 
+
+  async create(id:string, body: {chatId: string, content: string}) {
+    const chat = await this.chatsService.getOne(body.chatId)
+    const message:MessageNewEntity = await this.messagesRepository.save({
+      user_id: id,
+      chat_id: body.chatId,
+      content: body.content
+    })
+
+    await this.chatsService.update(chat.id, {messages: [message]});
+
+    return message
+  }
+
   async getMessages(
-    pageOptionsDto: PageOptionsDto,
     id: string,
-    createMessage: GetMessagesDto
-  ): Promise<PageDto<MessageEntity>> {
-    const page = pageOptionsDto.page || 1
-    const take = pageOptionsDto.take || 10
+    user: UserNewEntity,
+    pageOptionsDto: PageOptionsDto,
+  ) {
+    // const page = pageOptionsDto.page || 1
+    // const take = pageOptionsDto.take || 10
 
-    const promise1:Promise<MessageEntity[]> = new Promise(resolve => resolve(this.messagesRepository.find({
-      where: {
-        from: id,
-        to: createMessage.partnerId
-      }
-    })))
+    // const promise1:Promise<MessageNewEntity[]> = new Promise(resolve => resolve(this.messagesRepository.find({
+    //   where: {
+    //     from: id,
+    //     to: user.id
+    //   }
+    // })))
 
-    const promise2:Promise<MessageEntity[]> = new Promise(resolve => resolve(this.messagesRepository.find({
-      where: {
-        from: createMessage.partnerId,
-        to: id
-      }
-    })))
+    // const promise2:Promise<MessageNewEntity[]> = new Promise(resolve => resolve(this.messagesRepository.find({
+    //   where: {
+    //     from: user.id,
+    //     to: id
+    //   }
+    // })))
 
-    const messages = await Promise.all([promise1, promise2])
-    .then(([response1, response2]) => [...response1, ...response2])
-    const sortAndSlice = messages.sort((a,b) => a.createdAt - b.createdAt).slice((page - 1) * take, page * take)
-    const pageMetaDto = new PageMetaDto({ itemCount: messages.length, pageOptionsDto });
+    // const messages = await Promise.all([promise1, promise2])
+    // .then(([response1, response2]) => [...response1, ...response2])
+    // const sortAndSlice = messages.sort((a,b) => a.createdAt - b.createdAt).slice((page - 1) * take, page * take)
+    // const pageMetaDto = new PageMetaDto({ itemCount: messages.length, pageOptionsDto });
 
-    return new PageDto(sortAndSlice, pageMetaDto);
+
+    // return new PageDto(sortAndSlice, pageMetaDto);
   }
 
-  async create(id: string, createMessage: CreateMessageDto): Promise<MessageEntity> {
-      return await this.messagesRepository.save({
-        message: createMessage.message,
-        from: id,
-        to: createMessage.partnerId,
-        status: 3,
-      });  
-  }
+  // async create(id: string, createMessage: CreateMessageDto) {
+      // return await this.messagesRepository.save({
+      //   message: createMessage.message,
+      //   from: id,
+      //   to: createMessage.partnerId,
+      //   status: 3,
+      // });  
+  // }
 
     // async getOne(id: string): Promise<UserEntity> {
   //   const user = await this.userRepository.findOne({ where: { id } });
@@ -69,13 +90,13 @@ export class MessagesService {
   // }
 
   async update(id: string, messageDto: UpdateMessageDto) {
-    const message = await this.messagesRepository.findOne({ where: { id }});
-    if (!message) throw new NotFoundException('Message not found');
-    await this.messagesRepository.update(id, {
-      message: messageDto.message,
-    });
+    // const message = await this.messagesRepository.findOne({ where: { id }});
+    // if (!message) throw new NotFoundException('Message not found');
+    // await this.messagesRepository.update(id, {
+    //   message: messageDto.message,
+    // });
 
-    return await this.messagesRepository.findOne({ where: { id }});
+    // return await this.messagesRepository.findOne({ where: { id }});
   }
 
   // async delete(id: string): Promise<{ status: string }> {

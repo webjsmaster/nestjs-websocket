@@ -786,10 +786,10 @@
     multer "1.4.4-lts.1"
     tslib "2.6.2"
 
-"@nestjs/platform-socket.io@^10.2.7":
-  version "10.2.7"
-  resolved "https://registry.yarnpkg.com/@nestjs/platform-socket.io/-/platform-socket.io-10.2.7.tgz#b917aff1bd0f2929f30426cdeb1d19a8d3b70f11"
-  integrity sha512-P+xDyjz6FwST01elqZDFTxo250ALozGTnx01yvc5t30F6kJFIqeziuHzdrqTLfsEWpZLrjNIs4pi0UpAovawmw==
+"@nestjs/platform-socket.io@^10.2.8":
+  version "10.2.8"
+  resolved "https://registry.yarnpkg.com/@nestjs/platform-socket.io/-/platform-socket.io-10.2.8.tgz#af0558b6a6da95e05095733c7bb30f8d399d5482"
+  integrity sha512-P/Olw9alAaKD7Q1vS/ol7K81x1l7Bmi+AXthBNUPGMmG/W8kxO1krerW4rEhtF3BKJ0qJIa5bhDlb80p4lZcNA==
   dependencies:
     socket.io "4.7.2"
     tslib "2.6.2"
@@ -1145,6 +1145,13 @@
     "@types/http-errors" "*"
     "@types/mime" "*"
     "@types/node" "*"
+
+"@types/socket.io@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@types/socket.io/-/socket.io-3.0.2.tgz#606c9639e3f93bb8454cba8f5f0a283d47917759"
+  integrity sha512-pu0sN9m5VjCxBZVK8hW37ZcMe8rjn4HHggBN5CbaRTvFwv5jOmuIRZEuddsBPa9Th0ts0SIo3Niukq+95cMBbQ==
+  dependencies:
+    socket.io "*"
 
 "@types/stack-utils@^2.0.0":
   version "2.0.2"
@@ -4913,7 +4920,7 @@ socket.io-parser@~4.2.4:
     "@socket.io/component-emitter" "~3.1.0"
     debug "~4.3.1"
 
-socket.io@4.7.2:
+socket.io@*, socket.io@4.7.2:
   version "4.7.2"
   resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-4.7.2.tgz#22557d76c3f3ca48f82e73d68b7add36a22df002"
   integrity sha512-bvKVS29/I5fl2FGLNHuXlQaUH/BlzX1IN6S+NKLNZpBsPZIDH+90eQmCs2Railn4YUiww4SzUedJ6+uzwFnKLw==
@@ -5419,7 +5426,7 @@ uuid@9.0.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
   integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
 
-uuid@^9.0.0:
+uuid@^9.0.0, uuid@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
   integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
