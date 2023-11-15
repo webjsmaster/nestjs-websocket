@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, forwardRef } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, NotFoundException, forwardRef } from "@nestjs/common";
 import { InjectDataSource, InjectRepository, getRepositoryToken } from "@nestjs/typeorm";
 import { DataSource, In, Repository, getRepository } from "typeorm";
 import { ChatEntity } from "./entity/chat.entity";
@@ -27,8 +27,10 @@ export class ChatService {
   }
 
   async create (id:string, recipientId:string ) {
-    console.log('🤡:', id, recipientId)
-    const checkChat = await this.chatRepository
+    if (!id || !recipientId) {
+      throw new BadRequestException('Incorrect query parameters')
+    }
+      const checkChat = await this.chatRepository
       .createQueryBuilder('chats')
       .where('chats.users @> :users', {users: [id, recipientId]})
       .getOne()
@@ -56,7 +58,7 @@ export class ChatService {
     if (chat) {
       return chat;
     } else {
-      throw new NotFoundException('Chat not found');
+      throw new NotFoundException('Chat not found')
     }
   }
 

@@ -1,21 +1,16 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString, IsUUID } from "class-validator";
 
 export class SendMessageDto {
     @ApiProperty()
-    @IsString()
+    @IsUUID()
     @IsNotEmpty()
-    readonly text: string;
+    readonly chatId: string;
 
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    readonly userId: string;
-
-    @ApiProperty()
-    @IsString()
-    @IsNotEmpty()
-    readonly friendId: string;
+    readonly content: string;
 }
 
 export class ConnectedSocketDto {

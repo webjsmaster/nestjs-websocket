@@ -42,7 +42,7 @@ export class MessagesService {
     pageOptionsDto: PageOptionsDto,
   ) {
     const page = pageOptionsDto.page || 1
-    const take = pageOptionsDto.take || 10
+    const take = pageOptionsDto.take || 1000
 
     // const promise1:Promise<MessageNewEntity[]> = new Promise(resolve => resolve(this.messagesRepository.find({
     //   where: {

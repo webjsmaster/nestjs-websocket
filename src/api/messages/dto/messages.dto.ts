@@ -3,8 +3,8 @@ import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class GetMessagesDto {
   @ApiProperty()
-  // @IsString()
-  // @IsNotEmpty()
+  @IsString()
+  @IsNotEmpty()
   recipientId: string;
 }
 
@@ -13,18 +13,18 @@ export class CreateMessageDto {
   @IsString()
   @IsUUID()
   @IsNotEmpty()
-  partnerId: string;
+  recipientId: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  message: string;
+  content: string;
 }
 
 export class UpdateMessageDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  message: string;
+  content: string;
 }
 
