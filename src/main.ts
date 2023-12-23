@@ -7,7 +7,7 @@ import { json } from 'express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 
-const port = +process.env.API_PORT || 8080;
+const port = +process.env.API_PORT || 80;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
