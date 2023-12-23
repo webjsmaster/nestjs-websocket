@@ -2,13 +2,19 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { MessageEntity } from 'src/api/messages/entity/messages.entity';
+import { ChatEntity } from 'src/api/chats/entity/chat.entity';
+import { UserStatus } from '../types/user-types';
 
-
+@Entity('users')
 export class UserEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
@@ -28,8 +34,12 @@ export class UserEntity {
   password: string;
 
   @ApiProperty()
-  @Column()
-  version: number;
+  @Column({
+    type: 'enum',
+    enum: [1, 2, 3],
+    default: 3,
+  })
+  status: UserStatus;
 
   @ApiProperty()
   @Column()
@@ -53,12 +63,22 @@ export class UserEntity {
   })
   updatedAt: number;
 
-  constructor(partial: Partial<UserEntity>) {
-    Object.assign(this, partial);
-  }
+  @OneToMany(() => MessageEntity, (message: MessageEntity) => message.user, {
+    cascade: true,
+  })
+  messages: MessageEntity[];
 
-  toResponse() {
-    const { id, login, version, createdAt, updatedAt, email, avatar } = this;
-    return { id, login, version, createdAt, updatedAt, email, avatar };
-  }
+  @ManyToMany(() => ChatEntity)
+  @JoinTable({
+    name: 'users_chats',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'chat_id',
+      referencedColumnName: 'id',
+    },
+  })
+  chats: ChatEntity[];
 }

@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { UserStatus } from '../types/user-types';
 
 // entity для запроса getUserByArrayId, что-бы вернулся массив юзеров с ограниченными полями
 
@@ -30,10 +31,13 @@ export class UserFriendsEntity {
   @Column()
   password: string;
 
-  @ApiHideProperty()
-  @Exclude()
-  @Column()
-  version: number;
+  @ApiProperty()
+  @Column({
+    type: 'enum',
+    enum: [1, 2, 3],
+    default: 3,
+  })
+  status: UserStatus;
 
   @ApiProperty()
   @Column()

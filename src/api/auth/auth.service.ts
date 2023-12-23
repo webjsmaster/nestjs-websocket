@@ -3,10 +3,9 @@ import { CreateUsersDto, LoginUsersDto } from '../users/dto/users.dto';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { UserEntity } from '../users/entity/users.entity';
 import * as process from 'process';
 import { RefreshTokenDto } from './dto/refresh.dto';
-import { UserNewEntity } from '../users/entity/users-new.entity';
+import { UserEntity } from '../users/entity/users.entity';
 
 @Injectable()
 export class AuthService {
@@ -17,22 +16,15 @@ export class AuthService {
 
   async login(@Body() userDTO: LoginUsersDto) {
     const user = await this.validateUser(userDTO);
-    const {id,login,avatar} = user
+    const { id, login, avatar } = user;
     return {
       accessToken: await this.generateAccessToken(user),
       refreshToken: await this.generateRefreshToken(user),
-      user: {id,login,avatar}
+      user: { id, login, avatar },
     };
   }
 
-  async signup(@Body() userDTO: CreateUsersDto): Promise<UserNewEntity> {
-    // TODO =================================>
-    // const candidate = await this.usersService.getUserByLogin(userDTO.login)
-    // if (candidate) {
-    //   throw new HttpException('User with such login exists', HttpStatus.BAD_REQUEST)
-    // }
-
-    // TODO ========================> Commented for tests
+  async signup(@Body() userDTO: CreateUsersDto): Promise<UserEntity> {
     const hashPassword = await bcrypt.hash(
       userDTO.password,
       +process.env.CRYPT_SALT,
@@ -52,7 +44,7 @@ export class AuthService {
     };
   }
 
-  async generateAccessToken(user: UserNewEntity) {
+  async generateAccessToken(user: UserEntity) {
     const payload = { login: user.login, id: user.id };
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET_KEY || 'SECRET_KEY',
@@ -60,7 +52,7 @@ export class AuthService {
     });
   }
 
-  async generateRefreshToken(user: UserNewEntity) {
+  async generateRefreshToken(user: UserEntity) {
     const payload = { login: user.login, id: user.id };
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET_REFRESH_KEY || 'SECRET_REFRESH_KEY',

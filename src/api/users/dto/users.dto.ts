@@ -32,7 +32,7 @@ export class LoginUsersDto {
   readonly password: string;
 }
 
-export class UpdateUserDto {
+export class UpdatePasswordUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

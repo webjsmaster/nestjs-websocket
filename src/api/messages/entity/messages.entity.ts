@@ -8,54 +8,54 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserNewEntity } from 'src/api/users/entity/users-new.entity';
+import { UserEntity } from 'src/api/users/entity/users.entity';
 import { ChatEntity } from 'src/api/chats/entity/chat.entity';
 
-export type MessageStatus = 1 | 2 | 3
+export type MessageStatus = 1 | 2 | 3;
 
 @Entity('messages')
-export class MessageNewEntity {
+export class MessageEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ApiProperty()
-  @Column({name: 'user_id'})
+  @Column({ name: 'user_id' })
   user_id: string;
 
-  @ManyToOne(() => UserNewEntity, (user: UserNewEntity) => user.messages, {
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.messages, {
     onUpdate: 'CASCADE',
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   @JoinColumn({
     name: 'user_id',
-    referencedColumnName: 'id'
+    referencedColumnName: 'id',
   })
-  user: UserNewEntity;
+  user: UserEntity;
 
   @ApiProperty()
   @Column()
   content: string;
 
   @ApiProperty()
-  @Column({name: 'chat_id'})
+  @Column({ name: 'chat_id' })
   chat_id: string;
 
   @ManyToOne(() => ChatEntity, (chat: ChatEntity) => chat.messages, {
     onUpdate: 'CASCADE',
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   @JoinColumn({
     name: 'chat_id',
-    referencedColumnName: 'id'
+    referencedColumnName: 'id',
   })
   chat: ChatEntity;
 
   @ApiProperty()
   @Column({
     type: 'enum',
-    enum: [1,2,3],
-    default: 3
+    enum: [1, 2, 3],
+    default: 3,
   })
   status: MessageStatus;
 
@@ -77,5 +77,3 @@ export class MessageNewEntity {
   })
   updatedAt: number;
 }
-
-

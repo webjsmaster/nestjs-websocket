@@ -7,13 +7,11 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
   Query,
-  Res,
   UseGuards,
   UseInterceptors,
   UsePipes,
@@ -23,7 +21,7 @@ import { UsersService } from './users.service';
 import {
   CreateUsersDto,
   UpdateAvatarUserDto,
-  UpdateUserDto,
+  UpdatePasswordUserDto,
 } from './dto/users.dto';
 import {
   ApiBearerAuth,
@@ -32,25 +30,21 @@ import {
   ApiQuery,
   ApiResponse,
   ApiTags,
-  getSchemaPath,
 } from '@nestjs/swagger';
 import { UserFriendsEntity } from './entity/users-friends.entity';
-import { UserEntity } from './entity/users.entity';
 import {
   ApiBadReqMessage,
   ApiBadReqUUIDNoValidation,
   ApiForbiddenMessage,
-  ApiNoContentMessage,
   ApiNotAuth,
   ApiNotFoundMessage,
   ApiPaginatedResponse,
 } from 'src/decorators/response.decorators';
-import { Response } from 'express';
 import { ClosedAccessGuard } from 'src/guards/closed-access.guard';
 import { Public } from 'src/decorators/public.decorators';
-import { getUserIdToHeadersAuth } from 'src/helper/getUserToHeadersAuth';
 import { PageOptionsDto } from '../page/page-option.dto';
 import { PageDto } from '../page/page.dto';
+import { UserEntity } from './entity/users.entity';
 
 //npx @nestjs/cli g c users
 
@@ -78,7 +72,8 @@ export class UsersController {
   getMany(
     @Query() value: { value: string },
     @Query() pageOptionsDto: PageOptionsDto,
-    @Headers() body): Promise<PageDto<UserFriendsEntity>> {
+    @Headers() body,
+  ): Promise<PageDto<UserFriendsEntity>> {
     return this.usersService.getMany(pageOptionsDto, value, body);
   }
 
@@ -108,16 +103,16 @@ export class UsersController {
     return this.usersService.create(CreateUser);
   }
 
-  @ApiBody({ type: UpdateUserDto })
+  @ApiBody({ type: UpdatePasswordUserDto })
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(ValidationPipe)
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  update(
+  updatePassword(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateUser: UpdateUserDto,
+    @Body() updateUser: UpdatePasswordUserDto,
   ) {
-    return this.usersService.update(id, updateUser);
+    return this.usersService.updatePassword(id, updateUser);
   }
 
   @ApiBody({ type: UpdateAvatarUserDto })

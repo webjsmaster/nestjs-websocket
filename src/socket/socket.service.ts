@@ -11,19 +11,13 @@ import {
   SendMessageDto,
   WriteMessageSocketDto,
 } from './dto/socket.dto';
-import {
-  ForbiddenException,
-  Inject,
-  UseGuards,
-  forwardRef,
-} from '@nestjs/common';
+import { Inject, forwardRef } from '@nestjs/common';
 import { MessagesService } from 'src/api/messages/messages.service';
-import { CreateMessageDto } from 'src/api/messages/dto/messages.dto';
 import { Server } from 'socket.io';
 import { ChatService } from 'src/api/chats/chats.service';
-import { AuthUser } from 'src/decorators/get-user-from-token.decorator';
-import { UserNewEntity } from 'src/api/users/entity/users-new.entity';
+import { UserEntity } from 'src/api/users/entity/users.entity';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from 'src/api/users/users.service';
 
 @WebSocketGateway({
   cors: {
@@ -37,6 +31,9 @@ export default class SocketService implements OnGatewayConnection {
 
     @Inject(forwardRef(() => ChatService))
     private readonly chatsRepository: ChatService,
+
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersRepository: UsersService,
   ) {}
 
   @WebSocketServer()
@@ -96,31 +93,64 @@ export default class SocketService implements OnGatewayConnection {
       page: 0,
       skip: 0,
     });
+
+    const recipient = await this.usersRepository.getOneForFriends(
+      dto.recipientId,
+    );
+
+    console.log('🍄:', recipient);
+
     this.server.sockets.in(chat.id).emit('server-response-messages', {
       messages: messages.data,
+      recipient: {
+        id: recipient.id,
+        login: recipient.login,
+        status: recipient.status,
+        avatar: recipient.avatar,
+      },
       chatId: chat.id,
       meta: messages.meta,
     });
   }
 
-  async getUserFromToken(client: any) {
+  async getUserFromToken(client: any): Promise<UserEntity> {
     const token = client.handshake.query.token;
     try {
       const jwt = new JwtService();
       return jwt.verify(token, {
         secret: process.env.JWT_SECRET_KEY,
-      });
+      }) as UserEntity;
     } catch (error) {
       client.emit('server-error', 'The user is not authorized');
-      throw new ForbiddenException('The user is not authorized');
     }
   }
 
-  async sendMessageDb(dto: SendMessageDto) {
-    // return await this.messagesRepository.create( dto.userId, {recipientId:dto.recipientId, message: dto.text} as CreateMessageDto)
+  async handleConnection(client: any) {
+    const user = await this.getUserFromToken(client);
+
+    if (!user) {
+      this.server.disconnectSockets();
+    } else if (user.id) {
+      await this.usersRepository.updateStatus(user.id, 1);
+      console.log(`🌿 [USER]: ${user.login} [HAS STATUS] ${user.status}`);
+    }
   }
 
-  handleConnection(client: any, ...args): any {
-    console.log('[CONNECTED] 🚧: ', args);
+  async handleDisconnect() {
+    console.log('🌻: [DISCONNECTED]');
+  }
+
+  @SubscribeMessage('disconnect-client')
+  async handleEventDisconnect(
+    @MessageBody() body: any,
+    @ConnectedSocket() client: any,
+  ) {
+    const user = await this.getUserFromToken(client);
+    await this.usersRepository.updateStatus(user.id, 3);
+
+    this.server.sockets.in(body.chatId).emit('server-response-disconnect', {
+      status: 3,
+    });
+    this.server.disconnectSockets();
   }
 }

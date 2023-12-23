@@ -26,7 +26,10 @@ export class FriendsService {
     return await this.friendsRepository.find();
   }
 
-  async create(id: string, createFriends: CreateFriendDto): Promise<UserFriendsEntity> {
+  async create(
+    id: string,
+    createFriends: CreateFriendDto,
+  ): Promise<UserFriendsEntity> {
     const checkUserTo = await this.usersRepository.getOne(id);
     const checkUserFrom = await this.usersRepository.getOne(
       createFriends.friendId,
@@ -48,7 +51,9 @@ export class FriendsService {
           one: id,
           two: createFriends.friendId,
         });
-        return  await this.usersRepository.getOneForFriends(createFriends.friendId)
+        return await this.usersRepository.getOneForFriends(
+          createFriends.friendId,
+        );
       }
     }
   }
@@ -72,10 +77,7 @@ export class FriendsService {
     });
   }
 
-  async deleteFriend(
-    id: string,
-    friendId: string,
-  ): Promise<UserFriendsEntity> {
+  async deleteFriend(id: string, friendId: string): Promise<UserFriendsEntity> {
     const friend: FriendsEntity = await this.friendsRepository.findOne({
       where: {
         one: id,

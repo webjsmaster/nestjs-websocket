@@ -1,15 +1,13 @@
 import {
   BadRequestException,
   ForbiddenException,
-  Inject,
   Injectable,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common';
 import {
   CreateUsersDto,
   UpdateAvatarUserDto,
-  UpdateUserDto,
+  UpdatePasswordUserDto,
 } from './dto/users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -18,23 +16,22 @@ import { getUserIdToHeadersAuth } from 'src/helper/getUserToHeadersAuth';
 import { PageDto } from '../page/page.dto';
 import { PageOptionsDto } from '../page/page-option.dto';
 import { PageMetaDto } from '../page/page-meta.dto';
-import { UserNewEntity } from './entity/users-new.entity';
-import {v4 as uuidv4} from 'uuid';
-
+import { UserEntity } from './entity/users.entity';
+import { UserStatus } from './types/user-types';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserNewEntity)
-    private readonly userRepository: Repository<UserNewEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
 
     @InjectRepository(UserFriendsEntity)
     private readonly userFriendsRepository: Repository<UserFriendsEntity>,
   ) {}
 
-  async getAll(): Promise<UserNewEntity[]> {
+  async getAll(): Promise<UserEntity[]> {
     return await this.userRepository.find({
-      relations: ['chats']
+      relations: ['chats'],
     });
   }
 
@@ -73,7 +70,7 @@ export class UsersService {
     return new PageDto(entities, pageMetaDto);
   }
 
-  async getOne(id: string): Promise<UserNewEntity> {
+  async getOne(id: string): Promise<UserEntity> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (user) {
       return user;
@@ -91,7 +88,7 @@ export class UsersService {
     }
   }
 
-  async create(userInput: CreateUsersDto): Promise<UserNewEntity> {
+  async create(userInput: CreateUsersDto): Promise<UserEntity> {
     const checkUserLoginVerification = await this.getUserByLogin(
       userInput.login,
     );
@@ -107,20 +104,21 @@ export class UsersService {
     } else {
       const user = await this.userRepository.save({
         ...userInput,
-        version: 1,
-        avatar: ''
+        avatar: '',
       });
       return await this.getOne(user.id);
     }
   }
 
-  async update(id: string, userInput: UpdateUserDto): Promise<UserNewEntity> {
+  async updatePassword(
+    id: string,
+    userInput: UpdatePasswordUserDto,
+  ): Promise<UserEntity> {
     const user = await this.getOne(id);
     if (!user) throw new NotFoundException('User not found');
     if (userInput.oldPassword === user.password) {
       await this.userRepository.update(id, {
         password: userInput.newPassword,
-        version: ++user.version,
       });
       return await this.getOne(user.id);
     } else {
@@ -132,13 +130,20 @@ export class UsersService {
     const user = await this.getOne(id);
     await this.userRepository.update(id, {
       avatar: avatar.avatar,
-      version: ++user.version,
+    });
+    return await this.getOne(user.id);
+  }
+
+  async updateStatus(id: string, status: UserStatus) {
+    const user = await this.getOne(id);
+    await this.userRepository.update(id, {
+      status,
     });
     return await this.getOne(user.id);
   }
 
   async delete(id: string): Promise<{ status: string }> {
-    const user: UserNewEntity = await this.getOne(id);
+    const user: UserEntity = await this.getOne(id);
     if (user) {
       await this.userRepository.delete({ id: user.id });
       return { status: 'ok' };
@@ -147,12 +152,12 @@ export class UsersService {
     }
   }
 
-  async getUserByLogin(login: string): Promise<UserNewEntity> {
+  async getUserByLogin(login: string): Promise<UserEntity> {
     const user = await this.userRepository.findOne({ where: { login } });
     return !!user ? user : null;
   }
 
-  async getUserByEmail(email: string): Promise<UserNewEntity> {
+  async getUserByEmail(email: string): Promise<UserEntity> {
     const user = await this.userRepository.findOne({ where: { email } });
     return !!user ? user : null;
   }
