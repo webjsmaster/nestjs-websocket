@@ -6,8 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { json } from 'express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-
-const port = +process.env.API_PORT || 80;
+const port = +process.env.API_PORT || 8080;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,7 +27,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.useGlobalPipes(new ValidationPipe({transform: true})); // валидация
+  app.useGlobalPipes(new ValidationPipe({ transform: true })); // валидация
   app.enableCors();
 
   app.use(json({ limit: '50MB' }));
@@ -38,9 +37,12 @@ async function bootstrap() {
   // app.useGlobalFilters(new AllExceptionsFilter(new HttpAdapterHost<AbstractHttpAdapter>()))
 
   await app.listen(port);
-
 }
 
 bootstrap().then(() => {
-  console.log('\x1b[91;1m' + '\x1b[107m' + '  App started on', '\x1b[92m' + '\x1b[107m' + port, '\x1b[91m' + 'port  ' + '\x1b[0m');
+  console.log(
+    '\x1b[91;1m' + '\x1b[107m' + '  App started on',
+    '\x1b[92m' + '\x1b[107m' + port,
+    '\x1b[91m' + 'port  ' + '\x1b[0m',
+  );
 });

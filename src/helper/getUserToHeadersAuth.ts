@@ -1,5 +1,5 @@
-import { ForbiddenException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
+import { ForbiddenException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 export const getUserIdToHeadersAuth = (body) => {
   const authHeader = body.authorization;
@@ -9,11 +9,11 @@ export const getUserIdToHeadersAuth = (body) => {
     throw new ForbiddenException('The user is not authorized');
   }
 
-  const jwt = new JwtService
+  const jwt = new JwtService();
 
   const user = jwt.verify(token, {
     secret: process.env.JWT_SECRET_KEY,
   });
 
-  return user.id
-}
+  return user.id;
+};

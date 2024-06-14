@@ -23,12 +23,7 @@ import { JwtRefreshGuard } from '../../guards/jwt-refresh.guard';
 
 import { Public } from '../../decorators/public.decorators';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserEntity } from '../users/entity/users.entity';
 import {
   ApiBadReqMessage,
@@ -36,7 +31,6 @@ import {
   ApiNotAuth,
   ApiUnauthorizedMessage,
 } from 'src/decorators/response.decorators';
-
 
 @ApiTags('auth')
 @Controller('auth')
@@ -54,8 +48,8 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.OK)
   @Post('/login')
-  login(@Body() userDTO: LoginUsersDto) {
-    return this.authService.login(userDTO);
+  async login(@Body() userDTO: LoginUsersDto) {
+    return await this.authService.login(userDTO);
   }
 
   @ApiOperation({ summary: 'Registration user' })
@@ -101,9 +95,6 @@ export class AuthController {
     return this.authService.refresh(refreshToken);
   }
 
-
-
-  
   @ApiOperation({ summary: 'Checking token activity' })
   @ApiResponse({
     status: 200,
